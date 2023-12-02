@@ -10,10 +10,12 @@ public class SOConverter
 	int dataIntValue;
 	string dataAccName;
 	string dataAccPass;
+	string playerInput;
 	
 	public SOConverter (PlayerData so) {
 		dataIntValue = so.accountNum;
 		dataAccName = so.accountName;
 		dataAccPass = so.accountPass;
+		playerInput = so.playerInput;
 	}
 }

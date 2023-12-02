@@ -8,4 +8,6 @@ public class PlayerData : ScriptableObject
 	public int accountNum;
 	public string accountName;
 	public string accountPass;
+
+	public string playerInput;
 }

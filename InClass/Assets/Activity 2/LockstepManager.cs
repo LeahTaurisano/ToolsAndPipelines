@@ -4,12 +4,12 @@ using System;
 
 public class LockstepManager : MonoBehaviour
 {
-	private float fixedDeltaTime = 0.02f; // Lockstep fixed time step
+	public static float fixedDeltaTime = 0.02f; // Lockstep fixed time step
 
-	private float lockstepTimer = 0f; // Timer to track lockstep frame progression
-	private int lockstepFrame = 0; // Current lockstep frame count
+	public static float lockstepTimer = 0f; // Timer to track lockstep frame progression
+	public static int lockstepFrame = 0; // Current lockstep frame count
 
-	private List<InputData> inputBuffer = new List<InputData>(); // Buffer to store inputs received from clients
+	public static List<InputData> inputBuffer = new List<InputData>(); // Buffer to store inputs received from clients
 
 	private void Start()
 	{
@@ -19,28 +19,52 @@ public class LockstepManager : MonoBehaviour
 	private void Update()
 	{
 		// Check for new input and add it to the buffer
-		if (Input.GetKeyDown(KeyCode.Space))
-		{
-			InputData inputData = new InputData();
-			inputData.frame = lockstepFrame;
-			inputData.input = "Space";
-			inputBuffer.Add(inputData);
-		}
+		//if (Input.GetKeyDown(KeyCode.Space))
+		//{
+		//	InputData inputData = new InputData();
+		//	inputData.frame = lockstepFrame;
+		//	inputData.input = "Space";
+		//	inputBuffer.Add(inputData);
+		//}
 
-		// Process the lockstep frame if the timer exceeds the fixed time step
-		lockstepTimer += Time.deltaTime;
-		if (lockstepTimer >= fixedDeltaTime)
-		{
-			// Process the lockstep frame
-			ProcessLockstepFrame();
+		//// Process the lockstep frame if the timer exceeds the fixed time step
+		//lockstepTimer += Time.deltaTime;
+		//if (lockstepTimer >= fixedDeltaTime)
+		//{
+		//	// Process the lockstep frame
+		//	ProcessLockstepFrame();
 
-			// Increment lockstep frame and reset the timer
-			lockstepFrame++;
-			lockstepTimer = 0f;
-		}
+		//	// Increment lockstep frame and reset the timer
+		//	lockstepFrame++;
+		//	lockstepTimer = 0f;
+		//}
 	}
 
-	private void ProcessLockstepFrame()
+	public static List<InputData> InitiateLockstep()
+	{
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            InputData inputData = new InputData();
+            inputData.frame = lockstepFrame;
+            inputData.input = "Space";
+            inputBuffer.Add(inputData);
+        }
+
+        // Process the lockstep frame if the timer exceeds the fixed time step
+        lockstepTimer += Time.deltaTime;
+        if (lockstepTimer >= fixedDeltaTime)
+        {
+            // Process the lockstep frame
+            ProcessLockstepFrame();
+
+            // Increment lockstep frame and reset the timer
+            lockstepFrame++;
+            lockstepTimer = 0f;
+        }
+		return inputBuffer;
+    }
+
+	public static void ProcessLockstepFrame()
 	{
 		// Retrieve and process inputs for the current frame from the buffer
 		List<InputData> inputsToProcess = inputBuffer.FindAll(input => input.frame == lockstepFrame);
@@ -54,16 +78,16 @@ public class LockstepManager : MonoBehaviour
 		SimulateLockstepFrame();
 	}
 
-	private void SimulateLockstepFrame()
+    public static void SimulateLockstepFrame()
 	{
 		// Simulate game logic for the lockstep frame
-		Debug.Log($"Simulating lockstep frame {lockstepFrame}");
+		//Debug.Log($"Simulating lockstep frame {lockstepFrame}");
 
 		// Send synchronized data and inputs to clients
 		SendSynchronizedData();
 	}
 
-	private void SendSynchronizedData()
+    public static void SendSynchronizedData()
 	{
 		// Send synchronized game state data and inputs to clients
 		// You can use your networking implementation to send the data

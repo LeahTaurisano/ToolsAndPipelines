@@ -6,7 +6,7 @@ using System.Security.Cryptography;
 
 public class EncryptedInputSender : MonoBehaviour
 {
-	private string sharedKey = "MySharedKey123"; // Shared secret key for encryption and decryption
+	public static string sharedKey = "MySharedKey12345"; // Shared secret key for encryption and decryption
 
 	private void Update()
 	{
@@ -24,7 +24,7 @@ public class EncryptedInputSender : MonoBehaviour
 		}
 	}
 
-	private byte[] EncryptData(string data)
+	public static byte[] EncryptData(string data)
 	{
 		byte[] encryptedData;
 
@@ -62,7 +62,7 @@ public class EncryptedInputSender : MonoBehaviour
 		return encryptedData;
 	}
 
-	private void SendDataOverNetwork(byte[] data)
+	public static void SendDataOverNetwork(byte[] data)
 	{
 		// Replace this method with your network transmission code to send the encrypted data
 		// over the network to the intended recipient(s)
