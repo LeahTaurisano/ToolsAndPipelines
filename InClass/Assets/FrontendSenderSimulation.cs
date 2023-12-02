@@ -28,10 +28,10 @@ public class FrontendSenderSimulation : MonoBehaviour
         }
 
         // encrypt, serialize, compress, pack
-        byte[] encryptedData = EncryptedInputSender.EncryptData(myScriptableObject.playerInput); //This takes a string and returns a byte[]
+        byte[] serializedData = ScriptableObjectSerializer.SerializeScriptableObject(myScriptableObject);
 
-        byte[] serializedData = ScriptableObjectSerializer.SerializeScriptableObject(myScriptableObject); //This takes a SO and returns a byte[]
-                                                                                                          //How can they interact?
+        //byte[] encryptedData = EncryptedInputSender.EncryptData((string)serializedData);
+
         byte[] compressedData = DataCompression.CompressData(serializedData);
 
         byte[] packedData = BitPacker.PackData(compressedData.Length, compressedData);
