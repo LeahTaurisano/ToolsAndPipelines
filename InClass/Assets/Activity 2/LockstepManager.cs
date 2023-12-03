@@ -11,7 +11,10 @@ public class LockstepManager : MonoBehaviour
 
 	public static List<InputData> inputBuffer = new List<InputData>(); // Buffer to store inputs received from clients
 
-	private void Start()
+	public static bool processed = false;
+    public static bool hadInput = false;
+
+    private void Start()
 	{
 		// Initialize networking here
 	}
@@ -40,10 +43,11 @@ public class LockstepManager : MonoBehaviour
 		//}
 	}
 
-	public static List<InputData> InitiateLockstep()
+	public static void InitiateLockstep()
 	{
         if (Input.GetKeyDown(KeyCode.Space))
         {
+			hadInput = true;
             InputData inputData = new InputData();
             inputData.frame = lockstepFrame;
             inputData.input = "Space";
@@ -54,14 +58,17 @@ public class LockstepManager : MonoBehaviour
         lockstepTimer += Time.deltaTime;
         if (lockstepTimer >= fixedDeltaTime)
         {
-            // Process the lockstep frame
-            ProcessLockstepFrame();
+			// Process the lockstep frame
+			if (hadInput)
+			{
+				ProcessLockstepFrame();
+				processed = true;
+			}
 
             // Increment lockstep frame and reset the timer
             lockstepFrame++;
             lockstepTimer = 0f;
         }
-		return inputBuffer;
     }
 
 	public static void ProcessLockstepFrame()

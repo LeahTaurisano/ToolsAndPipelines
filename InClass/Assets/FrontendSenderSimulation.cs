@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -8,9 +9,11 @@ public class FrontendSenderSimulation : MonoBehaviour
 
     public PlayerData myScriptableObject;
 
-    string playerInput;
-    public static List<InputData> inputBuffer = new List<InputData>();
+    private string playerInput;
 
+    public static bool dataSent = false;
+
+    private static byte[] packedData;
     void Start()
     {
 	    // setup
@@ -20,27 +23,44 @@ public class FrontendSenderSimulation : MonoBehaviour
     void Update()
     {
         // game events happen here
-        inputBuffer = LockstepManager.InitiateLockstep();
+        LockstepManager.InitiateLockstep();
 
-        foreach (InputData inputData in inputBuffer)
+        if (LockstepManager.processed) //Only implemented so the NetworkSend doesn't spam the DebugLog
         {
-            myScriptableObject.playerInput = inputData.input; //Catches the last input
+            foreach (InputData inputData in LockstepManager.inputBuffer)
+            {
+                myScriptableObject.playerInput = inputData.input; //Catches the last input
+            }
+
+            // encrypt, serialize, compress, pack
+            byte[] serializedData = ScriptableObjectSerializer.SerializeScriptableObject(myScriptableObject);
+
+            string serializedString = BitConverter.ToString(serializedData);
+
+            byte[] encryptedData = EncryptedInputSender.EncryptData(serializedString);
+
+            byte[] compressedData = DataCompression.CompressData(encryptedData);
+
+            packedData = BitPacker.PackData(compressedData.Length, compressedData);
+
+            if (LockstepManager.processed && LockstepManager.hadInput) //Once again, only to prevent DebugLog spam for readability and testing
+            {
+                NetworkSend();
+            }
         }
-
-        // encrypt, serialize, compress, pack
-        byte[] serializedData = ScriptableObjectSerializer.SerializeScriptableObject(myScriptableObject);
-
-        //byte[] encryptedData = EncryptedInputSender.EncryptData((string)serializedData);
-
-        byte[] compressedData = DataCompression.CompressData(serializedData);
-
-        byte[] packedData = BitPacker.PackData(compressedData.Length, compressedData);
-
-        NetworkSend();
     }
     
 	private void NetworkSend(){
 		
-		Debug.Log("sending packet to backend..."); 
-	}
+		Debug.Log("sending packet to backend...");
+        LockstepManager.processed = false; 
+        LockstepManager.hadInput = false;
+        dataSent = true;
+
+    }
+
+    public static byte[] NetworkReceive()
+    {
+        return packedData;
+    }
 }
